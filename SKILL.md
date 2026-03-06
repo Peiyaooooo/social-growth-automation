@@ -21,7 +21,8 @@ Interactive skill that builds automated engage-then-follow bots for Twitter/X an
 | Platform | Method | Cost |
 |----------|--------|------|
 | **Twitter/X** | Twitter API v2 (OAuth 1.0a) | ~$100/mo API + hosting |
-| **Instagram** | PhantomBuster automation chain | ~$70-130/mo PhantomBuster |
+| **Instagram (API)** | Python + instagrapi library | Free (just your IG account) |
+| **Instagram (PhantomBuster)** | PhantomBuster automation chain | ~$70-130/mo PhantomBuster |
 
 ## Interactive Setup Flow
 
@@ -151,7 +152,95 @@ After generating code, walk user through:
 
 Test each step before moving to the next. If a step fails (common: 403 on likes = wrong permissions, 401 = wrong keys, 402 = out of credits), debug before continuing.
 
-## Instagram Setup Guide
+## Instagram Setup Guide (API — No PhantomBuster)
+
+### Overview
+
+Uses the `instagrapi` Python library to automate Instagram directly — no PhantomBuster account needed. Same engage-then-follow strategy, same Google Sheets tracking, same structure as the Twitter bot.
+
+### Setup Requirements
+
+- Instagram account (your main or a dedicated growth account)
+- Python 3.9+
+- Google Sheets (same setup as Twitter — service account + shared sheet)
+
+### API Setup Walkthrough
+
+1. Create `.env` with Instagram username and password
+2. Set up Google Sheets (same as Twitter setup — service account, share sheet)
+3. Run `scraper.py` to test login and fetch prospects
+
+**Two-Factor Auth:** If your account has 2FA enabled, `instagrapi` will prompt for the code on first login. After that, it saves the session to `session.json` and reuses it.
+
+**Session persistence:** The bot saves login sessions to `session.json` so it doesn't re-login every run. Sessions typically last days/weeks.
+
+### Generated Files
+
+Generate these files in an `instagram_bot/` directory, customized with user's answers:
+
+| File | Purpose |
+|------|---------|
+| `config.py` | IG credentials, competitor list, limits, delays, instagrapi client with session persistence |
+| `sheets.py` | Google Sheets read/write/update via gspread |
+| `scraper.py` | Fetch followers from competitors, filter by follower/post count, write to Prospects sheet |
+| `warmer.py` | Like 2 recent posts per prospect |
+| `follower.py` | Follow warmed prospects, track in Followed sheet |
+| `unfollower.py` | Unfollow non-followers after 72h |
+| `runner.py` | Schedule library orchestrator — same pattern as Twitter |
+| `requirements.txt` | instagrapi, gspread, google-auth, schedule, python-dotenv |
+| `.env` | IG username and password (user fills in) |
+
+See `templates/instagram-api/` for complete code templates.
+
+### Key Implementation Details
+
+**Session management:** Use `cl.load_settings()` / `cl.dump_settings()` to persist sessions. Test session validity by calling `cl.get_timeline_feed()` after loading.
+
+**Rate limits:** Instagram is stricter than Twitter. Keep delays at 60-90s between likes, 90-120s between follows. The `instagrapi` client has built-in `delay_range` for basic request spacing.
+
+**Scraper efficiency:** Skip scraping when 200+ unwarmed prospects are queued. Fetching full user profiles for filtering is expensive — cap at 100 new prospects per scrape run.
+
+**Challenge handling:** Instagram may trigger login challenges (suspicious login, CAPTCHA). If this happens, log into the account manually on your phone, approve the login, then re-run the bot.
+
+### Google Sheets Structure
+
+Same 4 tabs as Twitter:
+- **Competitors** — handle
+- **Prospects** — handle, user_id, followers_count, post_count, source, date_found, status
+- **Followed** — handle, user_id, date_followed, followed_back
+- **Weekly Tracking** — week, followers_start, followers_end, followed, unfollowed, followback_rate
+
+### Daily Schedule
+
+Same as Twitter:
+```
+9:00 AM  — scraper.py + warmer.py
+6:00 PM  — follower.py
+Every 3 days:
+10:00 AM — unfollower.py
+Sunday   — rest day
+```
+
+### Instagram-Specific Safety
+
+- Max 20 follows/day (Instagram is stricter than Twitter)
+- Max 60 likes/day
+- 60-90s delays between likes, 90-120s between follows
+- Full rest day every week
+- If you get a "challenge required" error, stop the bot for 24h and log in manually
+
+### Testing Flow
+
+1. Fill `.env` with IG username + password
+2. Set up Google Sheets (service account + share)
+3. Run `python scraper.py` — verify login works, prospects appear
+4. Run `python warmer.py` — verify likes sent
+5. Run `python follower.py` — verify follows sent
+6. Start `python runner.py` — verify scheduler
+
+---
+
+## Instagram Setup Guide (PhantomBuster — Alternative)
 
 ### PhantomBuster Chain
 

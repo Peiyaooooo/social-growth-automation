@@ -1,0 +1,5 @@
+instagrapi
+gspread
+google-auth
+schedule
+python-dotenv

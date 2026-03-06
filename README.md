@@ -42,7 +42,8 @@ Claude will detect the skill and walk you through the interactive setup.
 | Platform | Method | Cost |
 |----------|--------|------|
 | Twitter/X | Twitter API v2 + Python scripts | ~$100/mo API |
-| Instagram | PhantomBuster automation chain | ~$70-130/mo |
+| Instagram (API) | Python + instagrapi library | Free |
+| Instagram (PhantomBuster) | PhantomBuster automation chain | ~$70-130/mo |
 
 ## Strategy Overview
 
@@ -62,22 +63,24 @@ social-growth-automation/
   SKILL.md                        # Skill definition (Claude reads this)
   README.md                       # This file
   templates/
-    twitter/
-      config.py                   # Settings + OAuth 1.0a API client
-      sheets.py                   # Google Sheets helper
-      scraper.py                  # Fetch competitor followers
-      warmer.py                   # Like prospects' tweets
-      follower.py                 # Follow warmed prospects
-      unfollower.py               # Unfollow non-followers
-      runner.py                   # Scheduler
-      requirements.txt            # Python dependencies
-      .env.example                # API key template
+    twitter/                      # Twitter/X bot (API-based)
+      config.py, sheets.py, scraper.py, warmer.py,
+      follower.py, unfollower.py, runner.py,
+      requirements.txt, .env.example
+    instagram-api/                # Instagram bot (no PhantomBuster)
+      config.py, sheets.py, scraper.py, warmer.py,
+      follower.py, unfollower.py, runner.py,
+      requirements.txt, .env.example
+    instagram/                    # Instagram (PhantomBuster alternative)
+      config.py, audit.py, check_today.py, deep_audit.py
 ```
 
 ## Requirements
 
 - Python 3.9+
-- Twitter/X API access (developer.x.com) with Read+Write permissions
+- **Twitter:** Twitter/X API access (developer.x.com) with Read+Write permissions
+- **Instagram (API):** Just your Instagram username + password
+- **Instagram (PhantomBuster):** PhantomBuster account ($70-130/mo)
 - Google Cloud service account with Sheets API + Drive API enabled
 - A Google Sheet shared with the service account
 
