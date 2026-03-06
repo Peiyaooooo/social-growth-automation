@@ -51,11 +51,19 @@ def filter_prospect(user):
     return True
 
 
+MIN_UNWARMED_PROSPECTS = 200  # Skip scraping if enough prospects are queued
+
+
 def run():
     print("\n=== SCRAPER: Fetching competitor followers ===\n")
 
     existing_ids = sheets.get_existing_prospect_ids()
-    print(f"  Already have {len(existing_ids)} prospects in sheet\n")
+    unwarmed = sheets.count_by_status("Prospects", "new")
+    print(f"  Already have {len(existing_ids)} prospects in sheet ({unwarmed} unwarmed)\n")
+
+    if unwarmed >= MIN_UNWARMED_PROSPECTS:
+        print(f"  Skipping scrape — still have {unwarmed} unwarmed prospects queued (min {MIN_UNWARMED_PROSPECTS})")
+        return
 
     new_rows = []
     today = datetime.now().strftime("%Y-%m-%d")

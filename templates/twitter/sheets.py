@@ -67,9 +67,15 @@ def update_cell_by_match(tab_name, match_col, match_val, update_col, update_val)
 
     for i, record in enumerate(records):
         if str(record.get(match_col, "")) == str(match_val):
-            ws.update_cell(i + 2, update_idx + 1, update_val)
+            ws.update_cell(i + 2, update_idx + 1, update_val)  # +2 for header + 0-index
             return True
     return False
+
+
+def count_by_status(tab_name, status):
+    """Count rows in a tab where status column matches."""
+    records = read_tab(tab_name)
+    return sum(1 for r in records if str(r.get("status", "")) == status)
 
 
 def get_existing_prospect_ids():
