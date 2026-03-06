@@ -281,6 +281,9 @@ Sunday   — rest day
 | Google Sheets 403 | Missing drive scope | Add `https://www.googleapis.com/auth/drive` to scopes |
 | `pip install` fails on macOS | Externally managed environment | Use `python3 -m venv venv` first |
 | Bearer token fails on users/me | Bearer can't access user-context endpoints | Use OAuth 1.0a for ALL requests |
+| Instagram "challenge_required" | Suspicious login detected | Log in manually on phone, approve, then re-run bot |
+| Instagram "login_required" | Session expired | Delete `session.json`, bot will re-login on next run |
+| Instagram "feedback_required" | Too many actions, temporary block | Stop bot for 24-48h, reduce daily limits |
 
 ## Safety Disclaimer
 

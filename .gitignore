@@ -3,6 +3,7 @@
 google_creds.json
 *credentials*.json
 *secret*.json
+session.json
 __pycache__/
 *.pyc
 venv/

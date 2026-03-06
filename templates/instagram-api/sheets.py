@@ -62,7 +62,6 @@ def update_cell_by_match(tab_name, match_col, match_val, update_col, update_val)
     records = ws.get_all_records()
     headers = ws.row_values(1)
 
-    match_idx = headers.index(match_col)
     update_idx = headers.index(update_col)
 
     for i, record in enumerate(records):

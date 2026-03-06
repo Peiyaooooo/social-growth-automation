@@ -22,8 +22,7 @@ def run():
         print(f"  @{handle}...")
 
         try:
-            uid = cl.user_id_from_username(handle)
-            medias = cl.user_medias(uid, amount=5)
+            medias = cl.user_medias(int(user_id), amount=5)
 
             if not medias:
                 print(f"    No posts found, skipping")

@@ -1,5 +1,4 @@
 import os
-import json
 import random
 import time
 from instagrapi import Client
